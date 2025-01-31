@@ -1,0 +1,105 @@
+plt.style.use("classic")
+data = np.loadtxt("gyrate1.xvg",comments=["#","@"],unpack=True)
+#x2,y2 = np.loadtxt("rmsf.xvg",comments=["#","@"],unpack=True)
+x = data[0]
+y = data[1]
+df = pd.DataFrame({"Time":x, "P1_rmsd":y})
+fig, ax1 = plt.subplots(figsize=(14,6))
+
+#ax2 = ax1.twinx()
+ax1.plot(df['Time'], df['P1_rmsd'], 'r')
+#ax2.plot(df['Time'], df['P2_rmsd'], 'b-')
+
+ax1.set_xlabel('Time(ps)')
+ax1.set_ylabel('Rg ', color='g')
+#ax2.set_ylabel('Protein Chain K', color='b')
+plt.grid(False)
+plt.grid(False)
+plt.xlim(0,100000)
+plt.savefig("gyrateprotein.pdf")
+plt.title("Radius of gyration graph of Protein Simulation")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+plt.style.use("classic")
+x,y = np.loadtxt("sasa.xvg",comments=["#","@"],unpack=True)
+#x2,y2 = np.loadtxt("rmsf.xvg",comments=["#","@"],unpack=True)
+df = pd.DataFrame({"Time":x, "P1_rmsd":y})
+fig, ax1 = plt.subplots(figsize=(14,6))
+
+#ax2 = ax1.twinx()
+ax1.plot(df['Time'], df['P1_rmsd'], 'r')
+#ax2.plot(df['Time'], df['P2_rmsd'], 'b-')
+
+ax1.set_xlabel('Time(ns)')
+ax1.set_ylabel('SASA ', color='g')
+#ax2.set_ylabel('Protein Chain K', color='b')
+plt.grid(False)
+plt.grid(False)
+plt.xlim(0,100)
+plt.savefig("1stsasa.pdf")
+plt.title("SASA graph of Protein Simulation")
+plt.show()
+
+
+
+
+
+
+
+
+plt.style.use("classic")
+x,y = np.loadtxt("rmsf.xvg",comments=["#","@"],unpack=True)
+#x2,y2 = np.loadtxt("rmsf.xvg",comments=["#","@"],unpack=True)
+df = pd.DataFrame({"Time":x, "P1_rmsf":y})
+fig, ax1 = plt.subplots(figsize=(14,6))
+#print(df)
+#ax2 = ax1.twinx()
+ax1.plot(df['Time'], df['P1_rmsf'], 'r')
+#ax2.plot(df['Time'], df['P2_rmsd'], 'b-')
+
+ax1.set_xlabel('Residues')
+ax1.set_ylabel('RMSF ', color='g')
+#ax2.set_ylabel('Protein Chain K', color='b')
+plt.grid(False)
+plt.grid(False)
+plt.xlim(0,800)
+plt.savefig("1strmsf.pdf")
+plt.title("RMSF graph of Protein Simulation")
+plt.show()
+
+
+
+
+
+
+
+
+plt.style.use("classic")
+x,y = np.loadtxt("rmsd.xvg",comments=["#","@"],unpack=True)
+#x2,y2 = np.loadtxt("rmsf.xvg",comments=["#","@"],unpack=True)
+df = pd.DataFrame({"Time":x, "P1_rmsd":y})
+fig, ax1 = plt.subplots(figsize=(14,6))
+
+#ax2 = ax1.twinx()
+ax1.plot(df['Time'], df['P1_rmsd'], 'r')
+#ax2.plot(df['Time'], df['P2_rmsd'], 'b-')
+
+ax1.set_xlabel('Time(ns)')
+ax1.set_ylabel('RMSD ', color='g')
+#ax2.set_ylabel('Protein Chain K', color='b')
+plt.grid(False)
+plt.grid(False)
+plt.xlim(0,100)
+plt.savefig("1strmsd.pdf")
+plt.title("RMSD graph of Protein Simulation")
+plt.show()

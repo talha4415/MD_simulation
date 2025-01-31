@@ -1,0 +1,89 @@
+ 1: /home/sobp/mambaforge/envs/cgenff/bin/python cgenff_charmm2gmx_py3_nx1.py lig ACRB-ligand.mol2 ACRB.str charmm36-jul2021.ff/
+ 
+ 2: source /usr/local/gromacs/bin/GMXRC	
+ 
+ 3:gmx pdb2gmx -f REC.pdb -ignh -ter
+ 
+ 4:gmx editconf -f *_ini.pdb -o LIG.gro
+ 
+ 5:cat lig.gro
+ 
+ 6: gedit conf.gro
+ 
+ 7 : gedit topolgy.top
+ 
+; Include ligand parameters
+#include "lig.prm"
+
+ 
+; Include ligand topology 
+#include "lig.itp" 
+
+
+gmx editconf -f conf.gro -d 1.0 -bt triclinic -o box.gro #for creating box or define cordinates
+gmx solvate -cp box.gro -cs spc216.gro -p topol.top -o box_sol.gro #add solvent
+gmx grompp -f ions.mdp -c box_sol.gro -p topol.top -o ION.tpr 
+
+11:gmx genion -s ION.tpr -p topol.top -pname SOD -nname CLA -neutral -o box_sol_ion.gro 
+
+gmx grompp -f EM.mdp -c box_sol_ion.gro -p topol.top -o EM.tpr
+
+gmx mdrun -v -deffnm EM
+
+gmx make_ndx -f LIG.gro -o index_LIG.ndx
+	 > 0 & ! a H*
+ 	 > q
+	 
+gmx genrestr -f LIG.gro -n index_LIG.ndx -o posre_LIG.itp -fc 1000 1000 1000
+	> select group "3"
+	
+; Ligand position restraints
+#ifdef POSRES
+#include "posre_LIG.itp"
+#endif
+
+gmx make_ndx -f EM.gro -o index.ndx
+	
+	> 1 | 13
+	> 14 | 15
+	> q
+	
+-----[NVT]-----
+{gedit NVT.mdp (This file is already modified)}  ----- grep "\[" index.ndx 
+ (indicate the set of molecules imployed)
+change the tc grups
+
+gmx grompp -f NVT.mdp -c EM.gro -r EM.gro -p topol.top -n index.ndx -maxwarn 2 -o NVT.tpr	
+gmx mdrun -v -deffnm NVT
+
+r 668-1375 | r 1376-2023
+-----[NPT]-----
+gedit NPT.mdp (This file is already modified)
+
+gmx grompp -f NPT.mdp -c NVT.gro -r NVT.gro -p topol.top -n index.ndx -maxwarn 2 -o NPT.tpr
+gmx mdrun -v -deffnm NPT
+
+-----[FINAL MD RUN/PRODUCTION]-----
+gedit NPT.mdp (Change MD RUN TIME as per your need)
+
+gmx grompp -f MD.mdp -c NPT.gro -t NPT.cpt -p topol.top -n index.ndx -maxwarn 2 -o MD.tpr
+gmx mdrun -v -deffnm MD
+
+gmx trjconv -s MD.tpr -f MD.xtc -o MD_center.xtc -center -pbc mol -ur compact
+1
+0
+
+gmx rms -s MD.tpr -f MD_center.xtc -o rmsd.xvg -tu ns
+
+#creat index file for protein_protein simulation of rmsd calculation (gmx make_ndx -f MD.gro -o index.ndx) first we have to check the sequence of given protein then creat its index
+
+gmx rmsf -s MD.tpr -f MD_center.xtc -o rmsf.xvg -res # use index which we created previously
+
+
+
+
+
+
+
+
+/home/sobp/miniconda3/envs/cgenff/bin/python cgenff_charmm2gmx_py2.py lig sol10_2h.mol2 sol10_2h.str charmm36-jul2021.ff/
